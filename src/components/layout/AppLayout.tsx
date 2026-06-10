@@ -118,7 +118,7 @@ function Sidebar({ onNavigate }: { onNavigate?: () => void }) {
                   : "text-muted-foreground hover:bg-muted hover:text-foreground",
               )}
             >
-              <Icon className="h-4.5 w-4.5 h-4 w-4 shrink-0" />
+              <Icon className="h-4 w-4 shrink-0" />
               <span className="truncate">{item.label}</span>
               {active && (
                 <span className="absolute right-3 h-1.5 w-1.5 rounded-full bg-white/80" />
