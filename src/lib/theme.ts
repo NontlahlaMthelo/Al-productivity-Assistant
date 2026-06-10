@@ -1,26 +1,32 @@
 import { useEffect, useState } from "react";
 
-const KEY = "theme";
+type Theme = "light" | "dark";
+const KEY = "aiwp.theme";
+
+function getInitial(): Theme {
+  if (typeof window === "undefined") return "light";
+  const stored = localStorage.getItem(KEY) as Theme | null;
+  if (stored === "light" || stored === "dark") return stored;
+  return window.matchMedia?.("(prefers-color-scheme: dark)").matches ? "dark" : "light";
+}
 
 export function useTheme() {
-  const [theme, setTheme] = useState<"light" | "dark">("light");
+  const [theme, setTheme] = useState<Theme>("light");
 
   useEffect(() => {
-    const stored = localStorage.getItem(KEY) as "light" | "dark" | null;
-    const prefersDark = window.matchMedia("(prefers-color-scheme: dark)").matches;
-    const initial = stored ?? (prefersDark ? "dark" : "light");
-    setTheme(initial);
-    document.documentElement.classList.toggle("dark", initial === "dark");
+    const t = getInitial();
+    setTheme(t);
   }, []);
 
-  const toggle = () => {
-    setTheme((prev) => {
-      const next = prev === "dark" ? "light" : "dark";
-      document.documentElement.classList.toggle("dark", next === "dark");
-      localStorage.setItem(KEY, next);
-      return next;
-    });
-  };
+  useEffect(() => {
+    const root = document.documentElement;
+    root.classList.toggle("dark", theme === "dark");
+    localStorage.setItem(KEY, theme);
+  }, [theme]);
 
-  return { theme, toggle };
+  return {
+    theme,
+    toggle: () => setTheme((t) => (t === "dark" ? "light" : "dark")),
+    setTheme,
+  };
 }
